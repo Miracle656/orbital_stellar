@@ -1,0 +1,47 @@
+paths:
+  /api/registry/verdicts:
+    get:
+      summary: Retrieve contract verification verdicts
+      description: >-
+        Public read-only audit trail for ABI spec verification verdicts.
+        Omit `contractId` to list the latest verdict for every contract.
+      parameters:
+        - name: contractId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Verdict(s) with versioning metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      schema_version:
+                        type: string
+                  data:
+                    oneOf:
+                      - type: object
+                      - type: array
+                        items:
+                          type: object
+        '404':
+          description: No verdict recorded for the given contractId
+  /api/registry/specs:
+    get:
+      summary: List registered contract specs with their latest verdict
+      responses:
+        '200':
+          description: Array of registered specs, each annotated with latestVerdict
+    post:
+      summary: Register a new contract spec for verification
+      responses:
+        '201':
+          description: The registered spec
+        '400':
+          description: Invalid request body or spec
